@@ -1,0 +1,44 @@
+# syntax=docker/dockerfile:1
+#
+# Multi-stage build for the Go API. The go.mod `go 1.26.0` directive requires
+# a 1.26 toolchain, hence golang:1.26-alpine here rather than 1.25 -- an
+# older builder would trigger a network toolchain fetch mid-build (or fail
+# outright with GOTOOLCHAIN=local).
+
+# ---- Build stage ----
+FROM golang:1.26-alpine AS builder
+
+RUN apk add --no-cache git ca-certificates
+
+WORKDIR /src
+
+# Cache module downloads in their own layer, invalidated only when go.mod/go.sum change.
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# CGO_ENABLED=0 -> fully static binary, portable across the runtime stage's
+# libc. -trimpath drops local build-machine paths; -w -s strips the DWARF
+# debug info and symbol table, shrinking the binary for a smaller image.
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-w -s" -o /out/api ./cmd/api
+
+# ---- Runtime stage ----
+# Alpine (not distroless) so the container-native healthcheck below (and any
+# operator exec-ing in to debug) has a shell and wget available.
+FROM alpine:latest AS runtime
+
+RUN apk add --no-cache ca-certificates wget && \
+    addgroup -S app && adduser -S -G app app
+
+WORKDIR /app
+COPY --from=builder /out/api /app/api
+
+USER app:app
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=5 \
+    CMD wget -qO- http://127.0.0.1:8080/health || exit 1
+
+ENTRYPOINT ["/app/api"]

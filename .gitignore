@@ -1,0 +1,30 @@
+# ---- Environment / secrets ----
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# ---- Go ----
+/api
+*.exe
+*.log
+
+# ---- Frontend ----
+web/node_modules/
+web/dist/
+web/dist-ssr/
+web/*.local
+
+# ---- DB backups (local artifacts, never commit dumps) ----
+scripts/db/backups/*
+!scripts/db/backups/.gitkeep
+
+# ---- Editor / OS ----
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.swp
+
+# ---- Claude Code local session state ----
+.claude/

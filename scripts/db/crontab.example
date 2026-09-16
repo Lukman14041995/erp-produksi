@@ -1,0 +1,9 @@
+# Example host crontab for nightly backups at 02:00 server time, if you'd
+# rather use the host's cron than the `backup` sidecar container defined in
+# docker-compose.prod.yml. Install with: crontab -e
+#
+# Adjust the path and Postgres connection env vars for your environment.
+# If Postgres itself runs in Docker, POSTGRES_HOST/PORT must point at
+# whatever the container's port is published as on this host.
+
+0 2 * * * POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_USER=postgres POSTGRES_PASSWORD=changeme POSTGRES_DB=clothing_erp RETENTION_DAYS=30 /opt/clothing/scripts/db/backup.sh >> /var/log/clothing-erp-backup.log 2>&1

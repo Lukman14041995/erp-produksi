@@ -1,0 +1,102 @@
+# Production hardening overrides. Apply on top of the base file:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# What this changes vs. the base file:
+#   - Postgres and the backend are no longer published to the host at all --
+#     only nginx (the `frontend` service) is internet-facing, everything
+#     else is reached over the internal `erp` network by service name.
+#   - restart: always instead of unless-stopped (recover from host reboots
+#     unless an operator explicitly stops the stack).
+#   - Bounded json-file logging so container logs can't fill the disk.
+#   - CPU/memory limits so one runaway service can't starve the others.
+
+services:
+  postgres:
+    restart: always
+    ports: []
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1024M
+
+  backend:
+    restart: always
+    ports: []
+    environment:
+      APP_ENV: production
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  frontend:
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  # Lightweight daily-backup sidecar: no cron daemon, just the official
+  # postgres image's own pg_dump plus a polling loop in /bin/sh. Runs one
+  # backup immediately on startup, then again at 02:00 UTC every day.
+  # Prefer the crontab.example host-cron approach instead if you'd rather
+  # not run an extra always-on container for this.
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-clothing_erp}
+      BACKUP_DIR: /backups
+      RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}
+    volumes:
+      - ./scripts/db/backup.sh:/backup.sh:ro
+      - ./scripts/db/backups:/backups
+    entrypoint: ["/bin/sh", "-c"]
+    # Every literal `$` below is doubled ($$) because docker-compose runs its
+    # own ${VAR} interpolation over this file before the YAML ever reaches
+    # the container -- a bare $now/$(date...) here gets silently swallowed
+    # as an undefined compose variable (verified via `docker compose
+    # config`: it resolved to empty strings and would have permanently
+    # disabled the schedule with the loop comparing "" to "02:00").
+    command:
+      - |
+        set -e
+        chmod +x /backup.sh
+        echo "[backup-sidecar] running initial backup"
+        /backup.sh || echo "[backup-sidecar] initial backup failed, will retry at next scheduled run"
+        last_run=""
+        while true; do
+          now="$$(date -u +%H:%M)"
+          today="$$(date -u +%Y-%m-%d)"
+          if [ "$$now" = "02:00" ] && [ "$$last_run" != "$$today" ]; then
+            /backup.sh || echo "[backup-sidecar] scheduled backup failed"
+            last_run="$$today"
+          fi
+          sleep 30
+        done
+    networks: [erp]
