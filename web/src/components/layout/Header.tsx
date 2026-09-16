@@ -26,7 +26,7 @@ export function Header() {
   const navigate = useNavigate()
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-6">
+    <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-[var(--color-surface)] px-6">
       <CommandMenu />
 
       <div className="flex items-center gap-4">

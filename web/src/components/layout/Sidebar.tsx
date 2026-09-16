@@ -13,7 +13,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex h-screen flex-col border-r border-slate-200 bg-white transition-[width] duration-200',
+        'flex h-screen flex-col border-r border-slate-200 bg-[var(--color-surface)] transition-[width] duration-200',
         collapsed ? 'w-16' : 'w-64',
       )}
     >

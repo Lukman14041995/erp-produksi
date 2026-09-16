@@ -29,7 +29,7 @@ export function PrintPreviewModal({ open, onOpenChange, title, onDownloadPdf, do
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[880px] bg-slate-100 p-0">
+        <DialogContent className="print-light-scope max-w-[880px] bg-slate-100 p-0">
           <div className="flex items-center justify-between border-b border-slate-200 bg-white py-3 pl-5 pr-14">
             <p className="text-sm font-medium text-slate-700">{title}</p>
             <div className="flex gap-2">
@@ -53,7 +53,7 @@ export function PrintPreviewModal({ open, onOpenChange, title, onDownloadPdf, do
 
       {open &&
         createPortal(
-          <div className="print-portal-root hidden bg-white p-10 text-sm text-slate-800 print:block" style={{ width: '210mm' }}>
+          <div className="print-portal-root print-light-scope hidden bg-white p-10 text-sm text-slate-800 print:block" style={{ width: '210mm' }}>
             {children}
           </div>,
           document.body,

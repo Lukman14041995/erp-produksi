@@ -205,7 +205,7 @@ export function StockTransferNewPage() {
           </CardContent>
         </Card>
 
-        <div className="flex items-center justify-end gap-2 rounded-lg border border-slate-200 bg-white px-5 py-4">
+        <div className="flex items-center justify-end gap-2 rounded-lg border border-slate-200 bg-[var(--color-surface)] px-5 py-4">
           <Button type="button" variant="secondary" onClick={() => navigate('/inventory/transfers')}>
             Batal
           </Button>

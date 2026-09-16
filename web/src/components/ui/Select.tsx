@@ -9,7 +9,7 @@ export function SelectTrigger({ className, children, ...props }: React.Component
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        'flex h-9 w-full items-center justify-between rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-sm',
+        'flex h-9 w-full items-center justify-between rounded-md border border-slate-300 bg-[var(--color-surface)] px-3 py-1 text-sm shadow-sm',
         'focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] data-[placeholder]:text-slate-400',
         'disabled:cursor-not-allowed disabled:opacity-50',
         className,
@@ -28,7 +28,7 @@ export function SelectContent({ className, children, ...props }: React.Component
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
-        className={cn('z-50 max-h-72 min-w-[8rem] overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg', className)}
+        className={cn('z-50 max-h-72 min-w-[8rem] overflow-hidden rounded-md border border-slate-200 bg-[var(--color-surface)] shadow-lg', className)}
         position="popper"
         sideOffset={4}
         {...props}

@@ -40,7 +40,7 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-[var(--color-surface)] p-8 shadow-sm">
         <div className="mb-6 flex flex-col items-center">
           <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--color-primary)] text-white">
             <Shirt className="h-6 w-6" />

@@ -286,7 +286,7 @@ export function SalesOrderNewPage() {
           <Plus className="h-4 w-4" /> Tambah Produk
         </Button>
 
-        <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-5 py-4">
+        <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-[var(--color-surface)] px-5 py-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-slate-400">Total Keseluruhan ({items.length} baris)</p>
             <p className="text-xl font-semibold text-slate-900">{formatCurrency(grandTotal)}</p>

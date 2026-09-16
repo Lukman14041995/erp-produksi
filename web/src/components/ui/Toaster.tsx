@@ -32,7 +32,7 @@ export function Toaster() {
             key={t.id}
             role="alert"
             className={cn(
-              'flex items-start gap-3 rounded-md bg-white p-4 shadow-lg ring-1 ring-black/5',
+              'flex items-start gap-3 rounded-md bg-[var(--color-surface)] p-4 shadow-lg ring-1 ring-black/5',
               variantStyles[t.variant],
             )}
           >

@@ -8,7 +8,7 @@ export function DropdownMenuContent({ className, ...props }: React.ComponentProp
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
-        className={cn('z-50 min-w-[10rem] rounded-md border border-slate-200 bg-white p-1 shadow-lg', className)}
+        className={cn('z-50 min-w-[10rem] rounded-md border border-slate-200 bg-[var(--color-surface)] p-1 shadow-lg', className)}
         sideOffset={4}
         {...props}
       />

@@ -38,14 +38,14 @@ export function CommandMenu() {
       >
         <Search className="h-4 w-4" />
         Pencarian cepat
-        <kbd className="ml-auto rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+        <kbd className="ml-auto rounded border border-slate-300 bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
           &#8984;K
         </kbd>
       </button>
 
       {open && (
         <div className="fixed inset-0 z-100 flex items-start justify-center bg-black/40 pt-24" onClick={() => setOpen(false)}>
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-lg overflow-hidden rounded-lg bg-white shadow-xl">
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-lg overflow-hidden rounded-lg bg-[var(--color-surface)] shadow-xl">
             <Command label="Pencarian cepat">
               <Command.Input
                 autoFocus

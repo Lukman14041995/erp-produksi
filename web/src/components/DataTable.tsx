@@ -158,7 +158,7 @@ export function DataTable<T>({
               <tr
                 key={rowKey(row)}
                 onClick={() => onRowClick?.(row)}
-                className={cn('bg-white', onRowClick && 'cursor-pointer hover:bg-slate-50')}
+                className={cn('bg-[var(--color-surface)]', onRowClick && 'cursor-pointer hover:bg-slate-50')}
               >
                 {columns.map((col) => (
                   <td key={col.key} className={cn('px-4 py-2.5 whitespace-nowrap', col.className)}>

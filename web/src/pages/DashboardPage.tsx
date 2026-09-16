@@ -101,10 +101,15 @@ export function DashboardPage() {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tickFormatter={(v) => formatCurrency(v)} width={90} tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v) => formatCurrency(Number(v))} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2c" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#a1a1a6' }} />
+                    <YAxis tickFormatter={(v) => formatCurrency(v)} width={90} tick={{ fontSize: 11, fill: '#a1a1a6' }} />
+                    <Tooltip
+                      formatter={(v) => formatCurrency(Number(v))}
+                      contentStyle={{ backgroundColor: '#161617', border: '1px solid #2a2a2c', borderRadius: 8, color: '#f5f5f5' }}
+                      labelStyle={{ color: '#f5f5f5' }}
+                      itemStyle={{ color: '#f5f5f5' }}
+                    />
                     <Bar dataKey="value" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

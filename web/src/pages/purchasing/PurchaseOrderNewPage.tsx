@@ -136,7 +136,7 @@ export function PurchaseOrderNewPage() {
           </CardContent>
         </Card>
 
-        <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-5 py-4">
+        <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-[var(--color-surface)] px-5 py-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-slate-400">Total Keseluruhan</p>
             <p className="text-xl font-semibold text-slate-900">{formatCurrency(grandTotal)}</p>
