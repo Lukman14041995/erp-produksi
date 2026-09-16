@@ -91,7 +91,7 @@ export function StockOpnameDetailPage() {
       </div>
 
       {opname.status === 'POSTED' && (
-        <div className="mb-6 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+        <div className="mb-6 rounded-md border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-800">
           Opname ini telah diposting dan entri jurnalnya telah dibuat. Data sekarang tidak dapat diubah.
           {opname.journal_id && (
             <>

@@ -34,7 +34,7 @@ export function Sidebar() {
                 className={({ isActive }) =>
                   cn(
                     'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                    isActive ? 'bg-indigo-50 text-[var(--color-primary)]' : 'text-slate-600 hover:bg-slate-50',
+                    isActive ? 'bg-red-50 text-[var(--color-primary)]' : 'text-slate-600 hover:bg-slate-50',
                   )
                 }
               >
@@ -59,7 +59,7 @@ export function Sidebar() {
                         cn(
                           'block truncate rounded-md py-1.5 text-sm transition-colors',
                           collapsed ? 'px-3 text-center' : 'pl-8 pr-3',
-                          isActive ? 'bg-indigo-50 font-medium text-[var(--color-primary)]' : 'text-slate-600 hover:bg-slate-50',
+                          isActive ? 'bg-red-50 font-medium text-[var(--color-primary)]' : 'text-slate-600 hover:bg-slate-50',
                         )
                       }
                     >

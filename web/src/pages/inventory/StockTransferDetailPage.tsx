@@ -99,7 +99,7 @@ export function StockTransferDetailPage() {
       </div>
 
       {transfer.status === 'DISPATCHED' && (
-        <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           Stok sedang dalam perjalanan: sudah dikurangi dari {warehouseName(transfer.source_warehouse_id)}, belum ditambahkan ke{' '}
           {warehouseName(transfer.destination_warehouse_id)}.
         </div>
