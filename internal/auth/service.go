@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -38,7 +39,18 @@ func (s *Service) NeedsBootstrap(ctx context.Context) (bool, error) {
 	return count == 0, nil
 }
 
+// normalizeEmail trims and lowercases so login isn't sensitive to
+// capitalization or accidental whitespace from copy/paste or a mobile
+// keyboard's auto-capitalize-first-letter behavior -- verified live: a
+// production deploy's admin login failed with 422 purely from this, even
+// though the stored email and the user's typed email were "the same" to a
+// human.
+func normalizeEmail(email string) string {
+	return strings.ToLower(strings.TrimSpace(email))
+}
+
 func (s *Service) Register(ctx context.Context, in RegisterInput, forceAdmin bool) (User, error) {
+	in.Email = normalizeEmail(in.Email)
 	if in.Email == "" || in.Password == "" || in.Name == "" {
 		return User{}, apperr.Validation("email, password, and name are required")
 	}
@@ -67,7 +79,7 @@ func (s *Service) Register(ctx context.Context, in RegisterInput, forceAdmin boo
 }
 
 func (s *Service) Login(ctx context.Context, in LoginInput) (TokenPair, User, error) {
-	user, err := s.repo.GetByEmail(ctx, in.Email)
+	user, err := s.repo.GetByEmail(ctx, normalizeEmail(in.Email))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return TokenPair{}, User{}, apperr.Validation("invalid email or password")
 	}
