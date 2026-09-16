@@ -13,7 +13,12 @@
 services:
   postgres:
     restart: always
-    ports: []
+    # Compose merges list-valued keys across -f files by default -- a bare
+    # `ports: []` here does NOT clear the base file's port mapping (verified
+    # live: it left postgres published on 0.0.0.0:5432). `!reset` is the
+    # compose-spec merge tag that actually clears a base value instead of
+    # merging into it.
+    ports: !reset []
     logging:
       driver: json-file
       options:
@@ -27,7 +32,7 @@ services:
 
   backend:
     restart: always
-    ports: []
+    ports: !reset []
     environment:
       APP_ENV: production
     logging:
@@ -86,15 +91,17 @@ services:
     command:
       - |
         set -e
-        chmod +x /backup.sh
+        # backup.sh is bind-mounted read-only (:ro below) on purpose, so it
+        # can't be chmod'd here -- run it through the shell interpreter
+        # instead of relying on its own executable bit.
         echo "[backup-sidecar] running initial backup"
-        /backup.sh || echo "[backup-sidecar] initial backup failed, will retry at next scheduled run"
+        sh /backup.sh || echo "[backup-sidecar] initial backup failed, will retry at next scheduled run"
         last_run=""
         while true; do
           now="$$(date -u +%H:%M)"
           today="$$(date -u +%Y-%m-%d)"
           if [ "$$now" = "02:00" ] && [ "$$last_run" != "$$today" ]; then
-            /backup.sh || echo "[backup-sidecar] scheduled backup failed"
+            sh /backup.sh || echo "[backup-sidecar] scheduled backup failed"
             last_run="$$today"
           fi
           sleep 30
