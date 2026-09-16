@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '@/lib/uid'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
@@ -36,7 +37,7 @@ export function SupplierBillsPage() {
   const [supplierId, setSupplierId] = useState('')
   const [debitAccountCode, setDebitAccountCode] = useState('1-1200')
   const [taxRate, setTaxRate] = useState('0')
-  const [lines, setLines] = useState<LineDraft[]>([{ key: crypto.randomUUID(), materialId: '', qty: '', unitCost: '' }])
+  const [lines, setLines] = useState<LineDraft[]>([{ key: uid(), materialId: '', qty: '', unitCost: '' }])
 
   const supplierName = (id: string) => suppliers?.find((s) => s.id === id)?.name ?? id.slice(0, 8)
 
@@ -44,7 +45,7 @@ export function SupplierBillsPage() {
     setSupplierId('')
     setDebitAccountCode('1-1200')
     setTaxRate('0')
-    setLines([{ key: crypto.randomUUID(), materialId: '', qty: '', unitCost: '' }])
+    setLines([{ key: uid(), materialId: '', qty: '', unitCost: '' }])
   }
 
   function submit() {
@@ -168,7 +169,7 @@ export function SupplierBillsPage() {
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={() => setLines((ls) => [...ls, { key: crypto.randomUUID(), materialId: '', qty: '', unitCost: '' }])}
+                onClick={() => setLines((ls) => [...ls, { key: uid(), materialId: '', qty: '', unitCost: '' }])}
               >
                 <Plus className="h-3.5 w-3.5" /> Tambah Baris
               </Button>

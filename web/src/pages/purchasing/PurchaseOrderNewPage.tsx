@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '@/lib/uid'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
@@ -30,7 +31,7 @@ export function PurchaseOrderNewPage() {
   const [supplierId, setSupplierId] = useState('')
   const [expectedDate, setExpectedDate] = useState('')
   const [notes, setNotes] = useState('')
-  const [lines, setLines] = useState<LineDraft[]>([{ key: crypto.randomUUID(), materialId: '', qty: '', unitCost: '' }])
+  const [lines, setLines] = useState<LineDraft[]>([{ key: uid(), materialId: '', qty: '', unitCost: '' }])
 
   const grandTotal = lines.reduce((sum, l) => sum + (Number(l.qty) || 0) * (Number(l.unitCost) || 0), 0)
 
@@ -129,7 +130,7 @@ export function PurchaseOrderNewPage() {
               variant="secondary"
               size="sm"
               className="mt-3"
-              onClick={() => setLines((ls) => [...ls, { key: crypto.randomUUID(), materialId: '', qty: '', unitCost: '' }])}
+              onClick={() => setLines((ls) => [...ls, { key: uid(), materialId: '', qty: '', unitCost: '' }])}
             >
               <Plus className="h-3.5 w-3.5" /> Tambah Baris
             </Button>

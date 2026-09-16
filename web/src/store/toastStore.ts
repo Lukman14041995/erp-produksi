@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { uid } from '@/lib/uid'
 
 export type ToastVariant = 'success' | 'error' | 'info'
 
@@ -18,7 +19,7 @@ interface ToastState {
 export const useToastStore = create<ToastState>((set) => ({
   toasts: [],
   push: (toast) => {
-    const id = crypto.randomUUID()
+    const id = uid()
     set((state) => ({ toasts: [...state.toasts, { ...toast, id }] }))
     setTimeout(() => {
       set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }))

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '@/lib/uid'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
@@ -39,7 +40,7 @@ export function ProductionOrderNewPage() {
 
   const [bomDialogOpen, setBomDialogOpen] = useState(false)
   const [bomName, setBomName] = useState('Standard BOM')
-  const [bomLines, setBomLines] = useState<BomLineDraft[]>([{ key: crypto.randomUUID(), materialId: '', qtyPerUnit: '' }])
+  const [bomLines, setBomLines] = useState<BomLineDraft[]>([{ key: uid(), materialId: '', qtyPerUnit: '' }])
   const createBom = useCreateBOM()
 
   function selectProduct(id: string) {
@@ -237,7 +238,7 @@ export function ProductionOrderNewPage() {
                 </Button>
               </div>
             ))}
-            <Button type="button" variant="secondary" size="sm" onClick={() => setBomLines((ls) => [...ls, { key: crypto.randomUUID(), materialId: '', qtyPerUnit: '' }])}>
+            <Button type="button" variant="secondary" size="sm" onClick={() => setBomLines((ls) => [...ls, { key: uid(), materialId: '', qtyPerUnit: '' }])}>
               <Plus className="h-3.5 w-3.5" /> Tambah Baris
             </Button>
           </div>

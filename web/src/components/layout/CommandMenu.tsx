@@ -34,11 +34,11 @@ export function CommandMenu() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex w-64 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-400 hover:bg-slate-100"
+        className="flex h-9 w-9 items-center justify-center gap-2 rounded-md border border-slate-200 bg-slate-50 text-sm text-slate-400 hover:bg-slate-100 md:w-64 md:justify-start md:px-3 md:py-1.5"
       >
-        <Search className="h-4 w-4" />
-        Pencarian cepat
-        <kbd className="ml-auto rounded border border-slate-300 bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+        <Search className="h-4 w-4 shrink-0" />
+        <span className="hidden md:inline">Pencarian cepat</span>
+        <kbd className="ml-auto hidden rounded border border-slate-300 bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-medium text-slate-500 md:inline-flex">
           &#8984;K
         </kbd>
       </button>

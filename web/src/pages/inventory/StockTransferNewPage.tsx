@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '@/lib/uid'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
@@ -23,7 +24,7 @@ interface LineDraft {
 }
 
 function emptyLine(): LineDraft {
-  return { key: crypto.randomUUID(), itemType: 'MATERIAL', materialId: '', productId: '', productSizeId: '', qty: '' }
+  return { key: uid(), itemType: 'MATERIAL', materialId: '', productId: '', productSizeId: '', qty: '' }
 }
 
 export function StockTransferNewPage() {

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '@/lib/uid'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
@@ -31,8 +32,8 @@ export function JournalsPage() {
   const [open, setOpen] = useState(false)
   const [description, setDescription] = useState('')
   const [lines, setLines] = useState<LineDraft[]>([
-    { key: crypto.randomUUID(), accountCode: '', debit: '', credit: '', description: '' },
-    { key: crypto.randomUUID(), accountCode: '', debit: '', credit: '', description: '' },
+    { key: uid(), accountCode: '', debit: '', credit: '', description: '' },
+    { key: uid(), accountCode: '', debit: '', credit: '', description: '' },
   ])
 
   const totalDebit = lines.reduce((s, l) => s + (Number(l.debit) || 0), 0)
@@ -53,8 +54,8 @@ export function JournalsPage() {
         setOpen(false)
         setDescription('')
         setLines([
-          { key: crypto.randomUUID(), accountCode: '', debit: '', credit: '', description: '' },
-          { key: crypto.randomUUID(), accountCode: '', debit: '', credit: '', description: '' },
+          { key: uid(), accountCode: '', debit: '', credit: '', description: '' },
+          { key: uid(), accountCode: '', debit: '', credit: '', description: '' },
         ])
       })
       .catch((err) => toast.error('Gagal posting jurnal', err instanceof ApiError ? err.message : undefined))
@@ -142,7 +143,7 @@ export function JournalsPage() {
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => setLines((ls) => [...ls, { key: crypto.randomUUID(), accountCode: '', debit: '', credit: '', description: '' }])}
+              onClick={() => setLines((ls) => [...ls, { key: uid(), accountCode: '', debit: '', credit: '', description: '' }])}
             >
               <Plus className="h-3.5 w-3.5" /> Tambah Baris
             </Button>

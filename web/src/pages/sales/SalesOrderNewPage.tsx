@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { uid } from '@/lib/uid'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
@@ -196,10 +197,10 @@ export function SalesOrderNewPage() {
 
   const [customerId, setCustomerId] = useState('')
   const [notes, setNotes] = useState('')
-  const [lines, setLines] = useState<ProductLine[]>([{ key: crypto.randomUUID(), productId: '', rows: {} }])
+  const [lines, setLines] = useState<ProductLine[]>([{ key: uid(), productId: '', rows: {} }])
 
   function addLine() {
-    setLines((ls) => [...ls, { key: crypto.randomUUID(), productId: '', rows: {} }])
+    setLines((ls) => [...ls, { key: uid(), productId: '', rows: {} }])
   }
 
   function updateLine(key: string, next: ProductLine) {
