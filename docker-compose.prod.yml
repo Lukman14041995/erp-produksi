@@ -92,16 +92,19 @@ services:
       - |
         set -e
         # backup.sh is bind-mounted read-only (:ro below) on purpose, so it
-        # can't be chmod'd here -- run it through the shell interpreter
-        # instead of relying on its own executable bit.
+        # can't be chmod'd here -- run it through its own interpreter
+        # instead of relying on its executable bit. It's bash, not POSIX sh
+        # (uses BASH_SOURCE and `set -o pipefail`), so this must be `bash`,
+        # not the entrypoint's own `sh` -- verified `sh /backup.sh` throws
+        # "bad substitution" on the BASH_SOURCE line.
         echo "[backup-sidecar] running initial backup"
-        sh /backup.sh || echo "[backup-sidecar] initial backup failed, will retry at next scheduled run"
+        bash /backup.sh || echo "[backup-sidecar] initial backup failed, will retry at next scheduled run"
         last_run=""
         while true; do
           now="$$(date -u +%H:%M)"
           today="$$(date -u +%Y-%m-%d)"
           if [ "$$now" = "02:00" ] && [ "$$last_run" != "$$today" ]; then
-            sh /backup.sh || echo "[backup-sidecar] scheduled backup failed"
+            bash /backup.sh || echo "[backup-sidecar] scheduled backup failed"
             last_run="$$today"
           fi
           sleep 30
