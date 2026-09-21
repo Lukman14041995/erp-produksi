@@ -14,6 +14,7 @@ export interface SalesOrderItem {
   discount: string
   tax_rate: string
   line_total: string
+  quotation_item_id?: string
 }
 
 export interface SalesOrder {

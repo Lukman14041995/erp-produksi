@@ -83,7 +83,7 @@ export function ProductionOrderNewPage() {
       })
       .then((order) => {
         toast.success('Pesanan produksi berhasil dibuat', order.prod_number)
-        navigate(`/production/orders/${order.id}`)
+        navigate(`/production/hpp/${order.id}`)
       })
       .catch((err) => toast.error('Gagal membuat pesanan produksi', err instanceof ApiError ? err.message : undefined))
   }
@@ -180,7 +180,7 @@ export function ProductionOrderNewPage() {
         )}
 
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={() => navigate('/production/orders')}>
+          <Button variant="secondary" onClick={() => navigate('/production/hpp')}>
             Batal
           </Button>
           <Button onClick={submitOrder} loading={createOrder.isPending}>

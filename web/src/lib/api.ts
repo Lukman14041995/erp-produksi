@@ -97,3 +97,18 @@ export async function apiPut<T>(url: string, body?: unknown): Promise<T> {
   const res = await apiClient.put<Envelope<T>>(url, body)
   return res.data.data as T
 }
+
+export async function apiDelete<T>(url: string): Promise<T> {
+  const res = await apiClient.delete<Envelope<T>>(url)
+  return res.data.data as T
+}
+
+// apiUpload sends a multipart/form-data body (a single file under the given
+// field name) -- axios sets the boundary header itself from the FormData
+// instance, so this must not set Content-Type manually.
+export async function apiUpload<T>(url: string, fieldName: string, file: File): Promise<T> {
+  const form = new FormData()
+  form.append(fieldName, file)
+  const res = await apiClient.post<Envelope<T>>(url, form)
+  return res.data.data as T
+}

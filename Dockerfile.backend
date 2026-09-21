@@ -34,6 +34,10 @@ RUN apk add --no-cache ca-certificates wget && \
 WORKDIR /app
 COPY --from=builder /out/api /app/api
 
+# Design sample photos land here (UPLOAD_DIR, default ./uploads -> /app/uploads)
+# -- created and owned by the app user up front since /app itself is root-owned.
+RUN mkdir -p /app/uploads && chown -R app:app /app/uploads
+
 USER app:app
 
 EXPOSE 8080

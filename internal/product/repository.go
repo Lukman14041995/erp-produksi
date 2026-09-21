@@ -50,6 +50,14 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (Product, error)
 	return scanProduct(row)
 }
 
+// FindByCode looks up a product by its unique code. Used by the quotation
+// domain to find (or decide whether to create) the materialized product
+// behind a confirmed design+fabric combination.
+func (r *Repository) FindByCode(ctx context.Context, code string) (Product, error) {
+	row := db.Q(ctx, r.pool).QueryRow(ctx, `SELECT `+productColumns+` FROM products WHERE code=$1`, code)
+	return scanProduct(row)
+}
+
 func (r *Repository) List(ctx context.Context, limit, offset int) ([]Product, error) {
 	rows, err := db.Q(ctx, r.pool).Query(ctx, `SELECT `+productColumns+` FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2`, limit, offset)
 	if err != nil {
@@ -97,6 +105,13 @@ func (r *Repository) UpdateSize(ctx context.Context, id uuid.UUID, in UpsertSize
 
 func (r *Repository) GetSizeByID(ctx context.Context, id uuid.UUID) (ProductSize, error) {
 	row := db.Q(ctx, r.pool).QueryRow(ctx, `SELECT `+sizeColumns+` FROM product_sizes WHERE id=$1`, id)
+	return scanSize(row)
+}
+
+// FindSizeByCode looks up a product size by its code within a product. Used
+// by the quotation domain alongside FindByCode when materializing products.
+func (r *Repository) FindSizeByCode(ctx context.Context, productID uuid.UUID, sizeCode string) (ProductSize, error) {
+	row := db.Q(ctx, r.pool).QueryRow(ctx, `SELECT `+sizeColumns+` FROM product_sizes WHERE product_id=$1 AND size_code=$2`, productID, sizeCode)
 	return scanSize(row)
 }
 

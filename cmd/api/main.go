@@ -13,6 +13,8 @@ import (
 	mw "github.com/labstack/echo/v4/middleware"
 	"github.com/ranji/clothing-erp/internal/accounting"
 	"github.com/ranji/clothing-erp/internal/auth"
+	"github.com/ranji/clothing-erp/internal/billing"
+	"github.com/ranji/clothing-erp/internal/catalog"
 	"github.com/ranji/clothing-erp/internal/coa"
 	"github.com/ranji/clothing-erp/internal/config"
 	"github.com/ranji/clothing-erp/internal/customer"
@@ -25,9 +27,11 @@ import (
 	"github.com/ranji/clothing-erp/internal/product"
 	"github.com/ranji/clothing-erp/internal/production"
 	"github.com/ranji/clothing-erp/internal/purchasing"
+	"github.com/ranji/clothing-erp/internal/quotation"
 	"github.com/ranji/clothing-erp/internal/reporting"
 	"github.com/ranji/clothing-erp/internal/response"
 	"github.com/ranji/clothing-erp/internal/sales"
+	"github.com/ranji/clothing-erp/internal/spk"
 	"github.com/ranji/clothing-erp/internal/supplier"
 )
 
@@ -68,6 +72,10 @@ func main() {
 	productionRepo := production.NewRepository(pool)
 	purchasingRepo := purchasing.NewRepository(pool)
 	reportingRepo := reporting.NewRepository(pool)
+	catalogRepo := catalog.NewRepository(pool)
+	quotationRepo := quotation.NewRepository(pool)
+	billingRepo := billing.NewRepository(pool)
+	spkRepo := spk.NewRepository(pool)
 
 	// ---- Wire services (dependency order matters: accounting first, then
 	// domains that post through it, then domains that depend on those) ----
@@ -84,6 +92,10 @@ func main() {
 	financeSvc := finance.NewService(pool, financeRepo, accSvc, coaRepo, salesSvc, purchasingSvc)
 	productionSvc := production.NewService(pool, productionRepo, productRepo, accSvc, invSvc, salesSvc)
 	reportingSvc := reporting.NewService(reportingRepo)
+	catalogSvc := catalog.NewService(pool, catalogRepo)
+	billingSvc := billing.NewService(pool, billingRepo, coaSvc, financeSvc, salesSvc)
+	spkSvc := spk.NewService(pool, spkRepo, catalogSvc, customerSvc, salesSvc, materialSvc, invSvc, accSvc)
+	quotationSvc := quotation.NewService(pool, quotationRepo, catalogSvc, customerSvc, productSvc, salesSvc, billingSvc, spkSvc)
 
 	// ---- Wire handlers ----
 	authHandler := auth.NewHandler(authSvc)
@@ -99,6 +111,10 @@ func main() {
 	financeHandler := finance.NewHandler(financeSvc)
 	productionHandler := production.NewHandler(productionSvc, productSvc, materialSvc, salesSvc)
 	reportingHandler := reporting.NewHandler(reportingSvc)
+	catalogHandler := catalog.NewHandler(catalogSvc, cfg.UploadDir)
+	quotationHandler := quotation.NewHandler(quotationSvc, cfg.UploadDir)
+	billingHandler := billing.NewHandler(billingSvc)
+	spkHandler := spk.NewHandler(spkSvc)
 
 	e := echo.New()
 	e.HTTPErrorHandler = appmw.HTTPErrorHandler
@@ -123,9 +139,15 @@ func main() {
 		return response.OK(c, http.StatusOK, "ok", map[string]string{"status": "healthy"})
 	})
 
+	// Design sample photos, served unauthenticated (customers view them
+	// through a public order link) straight off local disk. Proxied through
+	// nginx's own /uploads/ location in front-end deployments.
+	e.Static("/uploads", cfg.UploadDir)
+
 	// ---- Public auth routes (no JWT required) ----
 	public := e.Group("/api/v1")
 	authHandler.RegisterPublic(public)
+	quotationHandler.RegisterPublic(public)
 
 	// ---- Protected routes: every domain below requires a valid access
 	// token. RBAC is layered on top per domain via RequireRole, at
@@ -143,16 +165,20 @@ func main() {
 	supplierHandler.Register(openToAll)
 	productHandler.Register(openToAll)
 	materialHandler.Register(openToAll)
+	catalogHandler.Register(openToAll)
 	reportingHandler.Register(openToAll)
 	accHandler.RegisterReadOnly(openToAll)
+	spkHandler.RegisterReadOnly(openToAll)
 
 	// Sales: order/invoice lifecycle owned by SALES (and ADMIN).
 	salesGroup := protected.Group("", auth.RequireRole(auth.RoleAdmin, auth.RoleSales))
 	salesHandler.Register(salesGroup)
+	quotationHandler.RegisterProtected(salesGroup)
 
 	// Production: production orders, BOM, HPP owned by PRODUCTION (and ADMIN).
 	productionGroup := protected.Group("", auth.RequireRole(auth.RoleAdmin, auth.RoleProduction))
 	productionHandler.Register(productionGroup)
+	spkHandler.Register(productionGroup)
 
 	// Inventory: touched by production (issue/receive) and finance (adjustments/valuation).
 	inventoryGroup := protected.Group("", auth.RequireRole(auth.RoleAdmin, auth.RoleProduction, auth.RoleFinance))
@@ -165,6 +191,11 @@ func main() {
 	// Finance: payments and expenses owned by FINANCE (and ADMIN).
 	financeGroup := protected.Group("", auth.RequireRole(auth.RoleAdmin, auth.RoleFinance))
 	financeHandler.Register(financeGroup)
+
+	// Billing: customer bank accounts + installment verification, touched by
+	// whoever manages sales orders as well as finance.
+	billingGroup := protected.Group("", auth.RequireRole(auth.RoleAdmin, auth.RoleSales, auth.RoleFinance))
+	billingHandler.Register(billingGroup)
 
 	// Accounting: journals and period close owned by ACCOUNTING (and ADMIN).
 	accountingGroup := protected.Group("", auth.RequireRole(auth.RoleAdmin, auth.RoleAccounting))

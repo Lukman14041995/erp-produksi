@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS spk_stage_logs;
+DROP TABLE IF EXISTS spk_stages;
+DROP TABLE IF EXISTS spk_items;
+DROP TABLE IF EXISTS spk_orders;

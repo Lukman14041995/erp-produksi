@@ -79,6 +79,25 @@ func (s *Service) Get(ctx context.Context, id uuid.UUID) (Product, error) {
 	return p, nil
 }
 
+// FindByCode returns apperr.NotFound if no product has this code, so callers
+// (e.g. the quotation domain's find-or-create materialization) can branch on
+// errors.As instead of a raw pgx.ErrNoRows check.
+func (s *Service) FindByCode(ctx context.Context, code string) (Product, error) {
+	p, err := s.repo.FindByCode(ctx, code)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Product{}, apperr.NotFound("product not found")
+	}
+	return p, err
+}
+
+func (s *Service) FindSizeByCode(ctx context.Context, productID uuid.UUID, sizeCode string) (ProductSize, error) {
+	sz, err := s.repo.FindSizeByCode(ctx, productID, sizeCode)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ProductSize{}, apperr.NotFound("product size not found")
+	}
+	return sz, err
+}
+
 func (s *Service) List(ctx context.Context, limit, offset int) ([]Product, error) {
 	if limit <= 0 || limit > 200 {
 		limit = 50

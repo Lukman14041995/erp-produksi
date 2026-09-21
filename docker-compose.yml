@@ -39,6 +39,9 @@ services:
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:8080,http://localhost:5174}
       MIGRATE_ON_STARTUP: "true"
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
     ports:
       - "${BACKEND_PORT:-8099}:8080"
     healthcheck:
@@ -71,6 +74,7 @@ services:
 
 volumes:
   pgdata:
+  uploads:
 
 networks:
   erp:

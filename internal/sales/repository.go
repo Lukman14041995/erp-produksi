@@ -38,12 +38,12 @@ func (r *Repository) InsertOrder(ctx context.Context, o SalesOrder) (SalesOrder,
 
 func (r *Repository) InsertOrderItem(ctx context.Context, i SalesOrderItem) (SalesOrderItem, error) {
 	row := db.Q(ctx, r.pool).QueryRow(ctx, `
-		INSERT INTO sales_order_items (sales_order_id, product_id, product_size_id, qty, unit_price, discount, tax_rate, line_total)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-		RETURNING id, sales_order_id, product_id, product_size_id, qty, unit_price, discount, tax_rate, line_total
-	`, i.SalesOrderID, i.ProductID, i.ProductSizeID, i.Qty, i.UnitPrice, i.Discount, i.TaxRate, i.LineTotal)
+		INSERT INTO sales_order_items (sales_order_id, product_id, product_size_id, qty, unit_price, discount, tax_rate, line_total, quotation_item_id)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+		RETURNING id, sales_order_id, product_id, product_size_id, qty, unit_price, discount, tax_rate, line_total, quotation_item_id
+	`, i.SalesOrderID, i.ProductID, i.ProductSizeID, i.Qty, i.UnitPrice, i.Discount, i.TaxRate, i.LineTotal, i.QuotationItemID)
 	var out SalesOrderItem
-	err := row.Scan(&out.ID, &out.SalesOrderID, &out.ProductID, &out.ProductSizeID, &out.Qty, &out.UnitPrice, &out.Discount, &out.TaxRate, &out.LineTotal)
+	err := row.Scan(&out.ID, &out.SalesOrderID, &out.ProductID, &out.ProductSizeID, &out.Qty, &out.UnitPrice, &out.Discount, &out.TaxRate, &out.LineTotal, &out.QuotationItemID)
 	return out, err
 }
 
@@ -62,7 +62,7 @@ func (r *Repository) GetOrderForUpdate(ctx context.Context, id uuid.UUID) (Sales
 
 func (r *Repository) ListOrderItems(ctx context.Context, orderID uuid.UUID) ([]SalesOrderItem, error) {
 	rows, err := db.Q(ctx, r.pool).Query(ctx, `
-		SELECT id, sales_order_id, product_id, product_size_id, qty, unit_price, discount, tax_rate, line_total
+		SELECT id, sales_order_id, product_id, product_size_id, qty, unit_price, discount, tax_rate, line_total, quotation_item_id
 		FROM sales_order_items WHERE sales_order_id=$1
 	`, orderID)
 	if err != nil {
@@ -72,7 +72,7 @@ func (r *Repository) ListOrderItems(ctx context.Context, orderID uuid.UUID) ([]S
 	out := []SalesOrderItem{}
 	for rows.Next() {
 		var i SalesOrderItem
-		if err := rows.Scan(&i.ID, &i.SalesOrderID, &i.ProductID, &i.ProductSizeID, &i.Qty, &i.UnitPrice, &i.Discount, &i.TaxRate, &i.LineTotal); err != nil {
+		if err := rows.Scan(&i.ID, &i.SalesOrderID, &i.ProductID, &i.ProductSizeID, &i.Qty, &i.UnitPrice, &i.Discount, &i.TaxRate, &i.LineTotal, &i.QuotationItemID); err != nil {
 			return nil, err
 		}
 		out = append(out, i)

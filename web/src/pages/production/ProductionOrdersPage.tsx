@@ -45,10 +45,10 @@ export function ProductionOrdersPage() {
   return (
     <div>
       <PageHeader
-        title="Pesanan Produksi"
-        description="Lacak produksi dari perencanaan hingga pengeluaran bahan, tenaga kerja/overhead, dan penyelesaian."
+        title="HPP Produksi (BOM)"
+        description="Perhitungan biaya produksi: BOM, pengeluaran bahan, tenaga kerja/overhead, dan HPP. Untuk melacak tahapan kerja SPK harian, lihat Pesanan Produksi T-Shirt/Jersey."
         actions={
-          <Button onClick={() => navigate('/production/orders/new')}>
+          <Button onClick={() => navigate('/production/hpp/new')}>
             <Plus className="h-4 w-4" /> Pesanan Produksi Baru
           </Button>
         }
@@ -69,7 +69,7 @@ export function ProductionOrdersPage() {
                 {data
                   .filter((o) => o.production_status === col.status)
                   .map((o) => (
-                    <OrderCard key={o.id} order={o} productName={productName(o.product_id)} onClick={() => navigate(`/production/orders/${o.id}`)} />
+                    <OrderCard key={o.id} order={o} productName={productName(o.product_id)} onClick={() => navigate(`/production/hpp/${o.id}`)} />
                   ))}
               </div>
             </div>

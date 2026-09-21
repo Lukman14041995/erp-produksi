@@ -27,6 +27,8 @@ const (
 	GoodsReceipt    DocType = "GRN"
 	StockTransfer   DocType = "MUT"
 	StockOpname     DocType = "OPN"
+	Quotation       DocType = "QUO"
+	SPKOrder        DocType = "SPK"
 )
 
 // Generate atomically reserves and returns the next number for docType in

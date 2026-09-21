@@ -89,6 +89,18 @@ const opnameStatusMap: StatusMap = {
   CANCELLED: { label: 'Dibatalkan', tone: 'danger' },
 }
 
+const quotationStatusMap: StatusMap = {
+  PENDING_REVIEW: { label: 'Menunggu Review', tone: 'warning' },
+  CONFIRMED: { label: 'Dikonfirmasi', tone: 'success' },
+  REJECTED: { label: 'Ditolak', tone: 'danger' },
+  CANCELLED: { label: 'Dibatalkan', tone: 'neutral' },
+}
+
+const orderLinkStatusMap: StatusMap = {
+  ACTIVE: { label: 'Aktif', tone: 'success' },
+  REVOKED: { label: 'Dicabut', tone: 'danger' },
+}
+
 const kinds = {
   order: orderStatusMap,
   payment: paymentStatusMap,
@@ -103,6 +115,8 @@ const kinds = {
   poBilling: poBillingStatusMap,
   transfer: transferStatusMap,
   opname: opnameStatusMap,
+  quotation: quotationStatusMap,
+  orderLink: orderLinkStatusMap,
 }
 
 export function StatusBadge({ kind, value }: { kind: keyof typeof kinds; value: string }) {

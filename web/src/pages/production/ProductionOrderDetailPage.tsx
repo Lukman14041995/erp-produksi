@@ -131,7 +131,7 @@ export function ProductionOrderDetailPage() {
 
   return (
     <div>
-      <button onClick={() => navigate('/production/orders')} className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800">
+      <button onClick={() => navigate('/production/hpp')} className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800">
         <ArrowLeft className="h-4 w-4" /> Kembali ke Pesanan Produksi
       </button>
 

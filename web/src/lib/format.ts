@@ -36,3 +36,13 @@ export function formatDateTime(value: string | Date | null | undefined): string 
 export function toISODate(d: Date): string {
   return d.toISOString().slice(0, 10)
 }
+
+// toUploadUrl resolves a server-relative upload path (e.g.
+// "/uploads/designs/xyz.png") against the API's origin, since uploaded
+// files are served by the backend itself (see e.Static in cmd/api/main.go
+// and the matching nginx /uploads/ proxy) rather than by Vite/the SPA host.
+export function toUploadUrl(path: string): string {
+  const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api/v1'
+  const origin = apiUrl.replace(/\/api\/v1\/?$/, '')
+  return origin + path
+}

@@ -11,13 +11,25 @@ import { SuppliersPage } from '@/pages/master-data/SuppliersPage'
 import { ProductsPage } from '@/pages/master-data/ProductsPage'
 import { MaterialsPage } from '@/pages/master-data/MaterialsPage'
 import { ChartOfAccountsPage } from '@/pages/master-data/ChartOfAccountsPage'
+import { ProductTypesPage } from '@/pages/master-data/ProductTypesPage'
+import { FabricsPage } from '@/pages/master-data/FabricsPage'
+import { GarmentVariantsPage } from '@/pages/master-data/GarmentVariantsPage'
+import { GarmentSizesPage } from '@/pages/master-data/GarmentSizesPage'
+import { InksPage } from '@/pages/master-data/InksPage'
 import { SalesOrdersPage } from '@/pages/sales/SalesOrdersPage'
 import { SalesOrderNewPage } from '@/pages/sales/SalesOrderNewPage'
 import { SalesOrderDetailPage } from '@/pages/sales/SalesOrderDetailPage'
 import { InvoicesPage } from '@/pages/sales/InvoicesPage'
+import { OrderLinksPage } from '@/pages/sales/OrderLinksPage'
+import { QuotationsPage } from '@/pages/sales/QuotationsPage'
+import { QuotationDetailPage } from '@/pages/sales/QuotationDetailPage'
+import { OrderConfiguratorPage } from '@/pages/public/OrderConfiguratorPage'
 import { ProductionOrdersPage } from '@/pages/production/ProductionOrdersPage'
 import { ProductionOrderNewPage } from '@/pages/production/ProductionOrderNewPage'
 import { ProductionOrderDetailPage } from '@/pages/production/ProductionOrderDetailPage'
+import { SpkListPage } from '@/pages/production/SpkListPage'
+import { SpkDetailPage } from '@/pages/production/SpkDetailPage'
+import { SpkKanbanPage } from '@/pages/production/SpkKanbanPage'
 import { InventoryBalancesPage } from '@/pages/inventory/InventoryBalancesPage'
 import { InventoryTransactionsPage } from '@/pages/inventory/InventoryTransactionsPage'
 import { WarehousesPage } from '@/pages/inventory/WarehousesPage'
@@ -33,6 +45,7 @@ import { PurchaseOrdersPage } from '@/pages/purchasing/PurchaseOrdersPage'
 import { PurchaseOrderNewPage } from '@/pages/purchasing/PurchaseOrderNewPage'
 import { PurchaseOrderDetailPage } from '@/pages/purchasing/PurchaseOrderDetailPage'
 import { PaymentsPage } from '@/pages/finance/PaymentsPage'
+import { BankAccountsPage } from '@/pages/finance/BankAccountsPage'
 import { ExpensesPage } from '@/pages/finance/ExpensesPage'
 import { JournalsPage } from '@/pages/accounting/JournalsPage'
 import { JournalDetailPage } from '@/pages/accounting/JournalDetailPage'
@@ -51,6 +64,9 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/order/:token" element={<OrderConfiguratorPage view="list" />} />
+          <Route path="/order/:token/new" element={<OrderConfiguratorPage view="new" />} />
+          <Route path="/order/:token/orders/:quotationId" element={<OrderConfiguratorPage view="detail" />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<AppShell />}>
@@ -61,6 +77,11 @@ export default function App() {
               <Route path="master-data/products" element={<ProductsPage />} />
               <Route path="master-data/materials" element={<MaterialsPage />} />
               <Route path="master-data/accounts" element={<ChartOfAccountsPage />} />
+              <Route path="master-data/product-types" element={<ProductTypesPage />} />
+              <Route path="master-data/fabrics" element={<FabricsPage />} />
+              <Route path="master-data/garment-variants" element={<GarmentVariantsPage />} />
+              <Route path="master-data/garment-sizes" element={<GarmentSizesPage />} />
+              <Route path="master-data/inks" element={<InksPage />} />
 
               <Route
                 path="sales/orders"
@@ -94,9 +115,65 @@ export default function App() {
                   </RoleGate>
                 }
               />
+              <Route
+                path="sales/order-links"
+                element={
+                  <RoleGate allow={['ADMIN', 'SALES']}>
+                    <OrderLinksPage />
+                  </RoleGate>
+                }
+              />
+              <Route
+                path="sales/quotations"
+                element={
+                  <RoleGate allow={['ADMIN', 'SALES']}>
+                    <QuotationsPage />
+                  </RoleGate>
+                }
+              />
+              <Route
+                path="sales/quotations/:id"
+                element={
+                  <RoleGate allow={['ADMIN', 'SALES']}>
+                    <QuotationDetailPage />
+                  </RoleGate>
+                }
+              />
 
               <Route
-                path="production/orders"
+                path="production/costing"
+                element={
+                  <RoleGate allow={['ADMIN', 'PRODUCTION']}>
+                    <SpkKanbanPage />
+                  </RoleGate>
+                }
+              />
+              <Route
+                path="production/orders/tshirt"
+                element={
+                  <RoleGate allow={['ADMIN', 'PRODUCTION']}>
+                    <SpkListPage productTypeCode="TSHIRT" title="Pesanan Produksi T-Shirt" />
+                  </RoleGate>
+                }
+              />
+              <Route
+                path="production/orders/jersey"
+                element={
+                  <RoleGate allow={['ADMIN', 'PRODUCTION']}>
+                    <SpkListPage productTypeCode="JERSEY" title="Pesanan Produksi Jersey" />
+                  </RoleGate>
+                }
+              />
+              <Route
+                path="production/orders/:id"
+                element={
+                  <RoleGate allow={['ADMIN', 'PRODUCTION']}>
+                    <SpkDetailPage />
+                  </RoleGate>
+                }
+              />
+              <Route
+                path="production/hpp"
                 element={
                   <RoleGate allow={['ADMIN', 'PRODUCTION']}>
                     <ProductionOrdersPage />
@@ -104,7 +181,7 @@ export default function App() {
                 }
               />
               <Route
-                path="production/orders/new"
+                path="production/hpp/new"
                 element={
                   <RoleGate allow={['ADMIN', 'PRODUCTION']}>
                     <ProductionOrderNewPage />
@@ -112,7 +189,7 @@ export default function App() {
                 }
               />
               <Route
-                path="production/orders/:id"
+                path="production/hpp/:id"
                 element={
                   <RoleGate allow={['ADMIN', 'PRODUCTION']}>
                     <ProductionOrderDetailPage />
@@ -247,6 +324,14 @@ export default function App() {
                 element={
                   <RoleGate allow={['ADMIN', 'FINANCE']}>
                     <ExpensesPage />
+                  </RoleGate>
+                }
+              />
+              <Route
+                path="finance/bank-accounts"
+                element={
+                  <RoleGate allow={['ADMIN', 'FINANCE']}>
+                    <BankAccountsPage />
                   </RoleGate>
                 }
               />

@@ -37,6 +37,11 @@ export const navGroups: NavGroup[] = [
       { label: 'Produk', to: '/master-data/products' },
       { label: 'Bahan Baku', to: '/master-data/materials' },
       { label: 'Bagan Akun', to: '/master-data/accounts' },
+      { label: 'Jenis Pesanan', to: '/master-data/product-types' },
+      { label: 'Model Potongan', to: '/master-data/garment-variants' },
+      { label: 'Bahan Jual', to: '/master-data/fabrics' },
+      { label: 'Tinta', to: '/master-data/inks' },
+      { label: 'Ukuran Pesanan', to: '/master-data/garment-sizes' },
     ],
   },
   {
@@ -46,13 +51,20 @@ export const navGroups: NavGroup[] = [
     children: [
       { label: 'Pesanan Penjualan', to: '/sales/orders' },
       { label: 'Faktur', to: '/sales/invoices' },
+      { label: 'Link Pesanan Customer', to: '/sales/order-links' },
+      { label: 'Quotation Masuk', to: '/sales/quotations' },
     ],
   },
   {
     label: 'Produksi',
     icon: Factory,
     roles: ['ADMIN', 'PRODUCTION'],
-    children: [{ label: 'Pesanan Produksi', to: '/production/orders' }],
+    children: [
+      { label: 'Papan Produksi', to: '/production/costing' },
+      { label: 'Pesanan Produksi T-Shirt', to: '/production/orders/tshirt' },
+      { label: 'Pesanan Produksi Jersey', to: '/production/orders/jersey' },
+      { label: 'HPP Produksi (BOM)', to: '/production/hpp' },
+    ],
   },
   {
     label: 'Persediaan',
@@ -82,6 +94,7 @@ export const navGroups: NavGroup[] = [
     children: [
       { label: 'Pembayaran', to: '/finance/payments' },
       { label: 'Pengeluaran', to: '/finance/expenses' },
+      { label: 'Rekening Bank', to: '/finance/bank-accounts' },
     ],
   },
   {

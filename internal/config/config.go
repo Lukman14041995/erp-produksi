@@ -20,6 +20,7 @@ type Config struct {
 	RefreshTokenTTL  time.Duration
 	CORSOrigins      []string
 	MigrateOnStartup bool
+	UploadDir        string
 }
 
 func Load() Config {
@@ -45,6 +46,7 @@ func Load() Config {
 		RefreshTokenTTL:  time.Duration(getEnvInt("REFRESH_TOKEN_TTL_DAYS", 7)) * 24 * time.Hour,
 		CORSOrigins:      getEnvList("CORS_ALLOWED_ORIGINS", []string{"*"}),
 		MigrateOnStartup: getEnvBool("MIGRATE_ON_STARTUP", true),
+		UploadDir:        getEnv("UPLOAD_DIR", "./uploads"),
 	}
 }
 

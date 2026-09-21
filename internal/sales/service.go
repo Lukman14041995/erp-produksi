@@ -92,6 +92,7 @@ func (s *Service) CreateOrder(ctx context.Context, in CreateOrderInput) (SalesOr
 			item, err := s.repo.InsertOrderItem(ctx, SalesOrderItem{
 				SalesOrderID: order.ID, ProductID: it.ProductID, ProductSizeID: it.ProductSizeID,
 				Qty: it.Qty, UnitPrice: it.UnitPrice, Discount: it.Discount, TaxRate: it.TaxRate, LineTotal: lineTotal,
+				QuotationItemID: it.QuotationItemID,
 			})
 			if err != nil {
 				return apperr.Internal("create sales order item", err)
@@ -472,6 +473,27 @@ func (s *Service) GetInvoice(ctx context.Context, id uuid.UUID) (Invoice, error)
 	}
 	inv.Items = items
 	return inv, nil
+}
+
+// GetInvoiceByOrder returns the (expected single) invoice for a sales
+// order -- the confirm-quotation flow creates exactly one -- or
+// apperr.NotFound if the order hasn't been invoiced yet.
+func (s *Service) GetInvoiceByOrder(ctx context.Context, orderID uuid.UUID) (Invoice, error) {
+	invoices, err := s.repo.ListInvoicesByOrder(ctx, orderID)
+	if err != nil {
+		return Invoice{}, apperr.Internal("load order invoices", err)
+	}
+	for _, inv := range invoices {
+		if inv.Status != InvoiceVoid {
+			items, err := s.repo.ListInvoiceItems(ctx, inv.ID)
+			if err != nil {
+				return Invoice{}, apperr.Internal("load invoice items", err)
+			}
+			inv.Items = items
+			return inv, nil
+		}
+	}
+	return Invoice{}, apperr.NotFound("this order has not been invoiced yet")
 }
 
 func (s *Service) ListInvoices(ctx context.Context, limit, offset int) ([]Invoice, error) {

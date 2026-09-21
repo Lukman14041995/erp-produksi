@@ -45,63 +45,67 @@ const (
 type InvoiceStatus string
 
 const (
-	InvoiceDraft          InvoiceStatus = "DRAFT"
-	InvoicePosted         InvoiceStatus = "POSTED"
-	InvoicePartiallyPaid  InvoiceStatus = "PARTIALLY_PAID"
-	InvoicePaid           InvoiceStatus = "PAID"
-	InvoiceVoid           InvoiceStatus = "VOID"
+	InvoiceDraft         InvoiceStatus = "DRAFT"
+	InvoicePosted        InvoiceStatus = "POSTED"
+	InvoicePartiallyPaid InvoiceStatus = "PARTIALLY_PAID"
+	InvoicePaid          InvoiceStatus = "PAID"
+	InvoiceVoid          InvoiceStatus = "VOID"
 )
 
 type SalesOrder struct {
-	ID                uuid.UUID        `json:"id"`
-	SONumber          string           `json:"so_number"`
-	CustomerID        uuid.UUID        `json:"customer_id"`
-	OrderDate         time.Time        `json:"order_date"`
-	OrderStatus       OrderStatus      `json:"order_status"`
-	PaymentStatus     PaymentStatus    `json:"payment_status"`
-	ProductionStatus  ProductionStatus `json:"production_status"`
-	DeliveryStatus    DeliveryStatus   `json:"delivery_status"`
-	Subtotal          decimal.Decimal  `json:"subtotal"`
-	DiscountTotal     decimal.Decimal  `json:"discount_total"`
-	TaxTotal          decimal.Decimal  `json:"tax_total"`
-	GrandTotal        decimal.Decimal  `json:"grand_total"`
-	Notes             string           `json:"notes"`
-	CreatedBy         string           `json:"created_by"`
-	CreatedAt         time.Time        `json:"created_at"`
-	UpdatedAt         time.Time        `json:"updated_at"`
-	Items             []SalesOrderItem `json:"items,omitempty"`
+	ID               uuid.UUID        `json:"id"`
+	SONumber         string           `json:"so_number"`
+	CustomerID       uuid.UUID        `json:"customer_id"`
+	OrderDate        time.Time        `json:"order_date"`
+	OrderStatus      OrderStatus      `json:"order_status"`
+	PaymentStatus    PaymentStatus    `json:"payment_status"`
+	ProductionStatus ProductionStatus `json:"production_status"`
+	DeliveryStatus   DeliveryStatus   `json:"delivery_status"`
+	Subtotal         decimal.Decimal  `json:"subtotal"`
+	DiscountTotal    decimal.Decimal  `json:"discount_total"`
+	TaxTotal         decimal.Decimal  `json:"tax_total"`
+	GrandTotal       decimal.Decimal  `json:"grand_total"`
+	Notes            string           `json:"notes"`
+	CreatedBy        string           `json:"created_by"`
+	CreatedAt        time.Time        `json:"created_at"`
+	UpdatedAt        time.Time        `json:"updated_at"`
+	Items            []SalesOrderItem `json:"items,omitempty"`
 }
 
 type SalesOrderItem struct {
-	ID              uuid.UUID       `json:"id"`
-	SalesOrderID    uuid.UUID       `json:"sales_order_id"`
-	ProductID       uuid.UUID       `json:"product_id"`
-	ProductSizeID   uuid.UUID       `json:"product_size_id"`
-	Qty             decimal.Decimal `json:"qty"`
-	UnitPrice       decimal.Decimal `json:"unit_price"`
-	Discount        decimal.Decimal `json:"discount"`
-	TaxRate         decimal.Decimal `json:"tax_rate"`
-	LineTotal       decimal.Decimal `json:"line_total"`
+	ID            uuid.UUID       `json:"id"`
+	SalesOrderID  uuid.UUID       `json:"sales_order_id"`
+	ProductID     uuid.UUID       `json:"product_id"`
+	ProductSizeID uuid.UUID       `json:"product_size_id"`
+	Qty           decimal.Decimal `json:"qty"`
+	UnitPrice     decimal.Decimal `json:"unit_price"`
+	Discount      decimal.Decimal `json:"discount"`
+	TaxRate       decimal.Decimal `json:"tax_rate"`
+	LineTotal     decimal.Decimal `json:"line_total"`
+	// QuotationItemID links back to the order-configurator line (design +
+	// fabric + size + variant) this item was materialized from, when the
+	// order originated from a customer quotation instead of a manual entry.
+	QuotationItemID *uuid.UUID `json:"quotation_item_id,omitempty"`
 }
 
 type Invoice struct {
-	ID             uuid.UUID       `json:"id"`
-	InvoiceNumber  string          `json:"invoice_number"`
-	SalesOrderID   uuid.UUID       `json:"sales_order_id"`
-	CustomerID     uuid.UUID       `json:"customer_id"`
-	InvoiceDate    time.Time       `json:"invoice_date"`
-	DueDate        *time.Time      `json:"due_date,omitempty"`
-	Status         InvoiceStatus   `json:"status"`
-	Subtotal       decimal.Decimal `json:"subtotal"`
-	DiscountTotal  decimal.Decimal `json:"discount_total"`
-	TaxTotal       decimal.Decimal `json:"tax_total"`
-	GrandTotal     decimal.Decimal `json:"grand_total"`
-	PaidAmount     decimal.Decimal `json:"paid_amount"`
-	BalanceDue     decimal.Decimal `json:"balance_due"`
-	JournalID      *uuid.UUID      `json:"journal_id,omitempty"`
-	CreatedAt      time.Time       `json:"created_at"`
-	UpdatedAt      time.Time       `json:"updated_at"`
-	Items          []InvoiceItem   `json:"items,omitempty"`
+	ID            uuid.UUID       `json:"id"`
+	InvoiceNumber string          `json:"invoice_number"`
+	SalesOrderID  uuid.UUID       `json:"sales_order_id"`
+	CustomerID    uuid.UUID       `json:"customer_id"`
+	InvoiceDate   time.Time       `json:"invoice_date"`
+	DueDate       *time.Time      `json:"due_date,omitempty"`
+	Status        InvoiceStatus   `json:"status"`
+	Subtotal      decimal.Decimal `json:"subtotal"`
+	DiscountTotal decimal.Decimal `json:"discount_total"`
+	TaxTotal      decimal.Decimal `json:"tax_total"`
+	GrandTotal    decimal.Decimal `json:"grand_total"`
+	PaidAmount    decimal.Decimal `json:"paid_amount"`
+	BalanceDue    decimal.Decimal `json:"balance_due"`
+	JournalID     *uuid.UUID      `json:"journal_id,omitempty"`
+	CreatedAt     time.Time       `json:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at"`
+	Items         []InvoiceItem   `json:"items,omitempty"`
 }
 
 type InvoiceItem struct {
@@ -124,6 +128,9 @@ type CreateOrderItemInput struct {
 	UnitPrice     decimal.Decimal `json:"unit_price"`
 	Discount      decimal.Decimal `json:"discount"`
 	TaxRate       decimal.Decimal `json:"tax_rate"`
+	// QuotationItemID is set only when this item is being materialized by
+	// the quotation domain's confirm flow; manual SO creation leaves it nil.
+	QuotationItemID *uuid.UUID `json:"quotation_item_id,omitempty"`
 }
 
 type CreateOrderInput struct {
